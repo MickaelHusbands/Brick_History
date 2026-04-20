@@ -36,3 +36,14 @@ body.modal-open { overflow: hidden; }
 
 .stats { display: flex; justify-content: space-around; padding: 40px 5%; background: var(--white); margin-bottom: 20px; text-align: center; }
 .stat-card h2 { color: var(--lego-red); font-size: 2.2rem; }
+
+/* PROCESS */
+.process-section { padding: 80px 5%; text-align: center; background: #fff; }
+.process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-top: 40px; }
+.p-item i { font-size: 2.5rem; color: var(--lego-red); margin-bottom: 15px; display: block; }
+
+/* GALLERY */
+.gallery-section { padding: 60px 5%; scroll-margin-top: 80px; }
+.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+.card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer; text-align: center; transition: 0.3s; }
+.card img { width: 100%; height: 200px; object-fit: contain; }
