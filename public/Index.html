@@ -91,53 +91,55 @@
         </div>
     </footer>
 
-<!-- Login Modal -->
-    <div id="login-modal" class="modal hidden">
-        <div class="modal-content big-login">
-            <span class="close-btn" id="login-close-btn">&times;</span>
-            <h2>Login to the Vault</h2>
-            <div class="login-form">
-                <input type="email" id="email" placeholder="bob@mail.com">
-                <input type="password" id="password" placeholder="bobpass">
-            </div>
-            <p class="demo-hint">Demo login: <strong>bob@mail.com</strong> / <strong>bobpass</strong></p>
-            <button id="login-exec-btn" class="orange-btn">Enter Archive</button>
-        </div>
-    </div>
 
-    <!-- Detail Modal -->
-    <div id="detail-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn" id="detail-close-btn">&times;</span>
-            <div class="detail-layout">
-                <div class="m-img-container"><img id="m-img" src="" alt=""></div>
-                <div class="m-info">
-                    <h2 id="m-title"></h2>
-                    <p id="m-meta"></p>
-                    <hr>
-                    <div id="bob-zone" class="hidden">
-                        <h3>Collector Log</h3>
-                        <textarea id="build-log" placeholder="Write a build log..."></textarea>
-                        <div class="modal-btns">
-                            <button id="add-to-vault-btn" class="btn-primary">📥 Add to Vault</button>
-                            <button id="update-log-btn" class="btn-secondary hidden">💾 Update Log</button>
-                            <button id="remove-vault-btn" class="btn-danger hidden">🗑️ Remove Set</button>
-                        </div>
-                    </div>
-                    <!-- Guest View -->
-                    <div id="guest-zone" class="guest-prompt">
-                        <i class="fas fa-lock" style="font-size: 2.2rem; color: var(--lego-red); margin-bottom: 15px; display: block;"></i>
-                        <h3>Unlock Collector Features</h3>
-                        <p>Sign in to save this set to your personal Vault and add private build logs.</p>
-                        <button id="guest-login-trigger" class="orange-btn" style="margin-top: 15px;">Login to Unlock</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-  
+function renderGrid(sets, isVaultView, container = grid) {
+    if (isVaultView && sets.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style.cssText = "text-align:center; padding:40px 20px; color:#555; grid-column: 1 / -1;";
+        emptyMsg.innerHTML = `<h3 style="color: var(--lego-red);">Your Vault is Empty</h3>`;
+        container.appendChild(emptyMsg);
+        return;
+    }
+    sets.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        const imgUrl = isVaultView ? (s.img || s.set_img_url) : s.set_img_url;
+        div.innerHTML = `<img src="${imgUrl || 'https://placehold.co/300x200'}" alt="${s.name}"><h3>${s.name}</h3><p>${s.year} • ${s.num_parts || '?'} parts</p>`;
+        div.onclick = () => openModal(s, isVaultView);
+        container.appendChild(div);
+    });
+}
 
+function openModal(set, isVaultView) {
+    currentSet = set;
+    document.getElementById('m-img').src = isVaultView ? (set.img || set.set_img_url) : set.set_img_url;
+    document.getElementById('m-title').innerText = set.name;
+    document.getElementById('m-meta').innerText = `Year: ${set.year} | Parts: ${set.num_parts || '?'}`;
+
+    const bobZone = document.getElementById('bob-zone');
+    const guestZone = document.getElementById('guest-zone');
+    const noteField = document.getElementById('build-log');
+    const addBtn = document.getElementById('add-to-vault-btn');
+    const updateBtn = document.getElementById('update-log-btn');
+    const removeBtn = document.getElementById('remove-vault-btn');
+
+    if (auth.currentUser) {
+        bobZone.classList.remove('hidden'); guestZone.classList.add('hidden');
+        if (isVaultView) {
+            noteField.value = set.buildLog || ""; addBtn.classList.add('hidden');
+            updateBtn.classList.remove('hidden'); removeBtn.classList.remove('hidden');
+            updateBtn.onclick = () => updateSet(set.docId); removeBtn.onclick = () => removeSet(set.docId);
+        } else {
+            noteField.value = ""; addBtn.classList.remove('hidden');
+            updateBtn.classList.add('hidden'); removeBtn.classList.add('hidden');
+            addBtn.onclick = saveSet;
+        }
+    } else {
+        bobZone.classList.add('hidden'); guestZone.classList.remove('hidden');
+        document.getElementById('guest-login-trigger').onclick = () => { closeModal(); document.getElementById('login-modal').classList.remove('hidden'); }
+    }
+    detailModal.classList.remove('hidden'); toggleBodyScroll(true);
+}
 
     
 
