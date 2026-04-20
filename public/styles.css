@@ -83,3 +83,16 @@ body.modal-open { overflow: hidden; }
 #build-log { width: 100%; min-height: 140px; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-family: inherit; resize: vertical; }
 
 .guest-prompt { text-align: center; padding: 25px; background: #fff8f8; border: 2px dashed var(--lego-orange); border-radius: 15px; margin-top: 20px; }
+
+/* SEARCH SUGGESTIONS */
+.search-suggestions { position: absolute; top: 100%; left: 0; right: 50px; background: white; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; max-height: 320px; overflow-y: auto; margin-top: 8px; text-align: left; }
+.suggestion-header { padding: 12px 18px; background: #f8f8f8; font-weight: 700; color: var(--lego-red); font-size: 0.95rem; }
+.suggestion-item:hover { background-color: #fff5e6 !important; color: var(--lego-orange); }
+
+.hidden { display: none !important; }
+.btn-primary { background: var(--lego-yellow); color: var(--dark); border-radius: 30px; padding: 12px 25px; border: none; font-weight: bold; cursor: pointer; }
+.btn-danger { background: #ff4444; color: white; padding: 12px 25px; border-radius: 30px; border: none; cursor: pointer; }
+.btn-secondary { background: #666; color: white; padding: 12px 25px; border-radius: 30px; border: none; cursor: pointer; }
+.modal-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+
+footer { padding: 40px; text-align: center; background: var(--white); border-top: 1px solid #ddd; }
