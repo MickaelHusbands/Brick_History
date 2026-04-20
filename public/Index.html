@@ -136,6 +136,60 @@
         </div>
     </div>
 
+ <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script type="module" src="app.js?v=2"></script>
+
+    <script>
+        const loginModal = document.getElementById('login-modal');
+        const detailModal = document.getElementById('detail-modal');
+        const loginCloseBtn = document.getElementById('login-close-btn');
+        const detailCloseBtn = document.getElementById('detail-close-btn');
+
+        function closeLoginModal() {
+            loginModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function closeDetailModal() {
+            detailModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        if (loginCloseBtn) loginCloseBtn.addEventListener('click', closeLoginModal);
+        if (detailCloseBtn) detailCloseBtn.addEventListener('click', closeDetailModal);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === loginModal) closeLoginModal();
+            if (event.target === detailModal) closeDetailModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") { closeLoginModal(); closeDetailModal(); }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviews = document.querySelectorAll('.review-item');
+            let currentIndex = 0;
+            const intervalTime = 6000; 
+
+            function showReview(index) {
+                reviews.forEach((review, i) => {
+                    review.classList.toggle('active', i === index);
+                });
+            }
+
+            function nextReview() {
+                currentIndex = (currentIndex + 1) % reviews.length;
+                showReview(currentIndex);
+            }
+
+            let testimonialInterval = setInterval(nextReview, intervalTime);
+            showReview(0);
+        });
+    </script>
+</body>
+</html>
 
     
 
