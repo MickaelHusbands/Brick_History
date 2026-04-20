@@ -139,3 +139,51 @@ async function updateSet(docId) {
 async function removeSet(id) {
     if (confirm("Remove this set?")) { await deleteDoc(doc(db, "vault", id)); closeModal(); loadVault(); }
 }
+
+export async function loadVault() {
+    if (!auth.currentUser) return;
+    grid.innerHTML = "";
+    try {
+        const q = query(collection(db, "vault"), where("uid", "==", auth.currentUser.uid));
+        const snap = await getDocs(q);
+        const vaultSets = [];
+        snap.forEach(docSnap => vaultSets.push({ ...docSnap.data(), docId: docSnap.id }));
+
+        const vaultHeader = document.createElement('div');
+        vaultHeader.id = "my-vault-anchor"; 
+        vaultHeader.style.cssText = "margin-bottom: 25px; text-align: center; width: 100%; grid-column: 1 / -1;";
+        vaultHeader.innerHTML = `<h2 style="color: var(--lego-red); font-size: 2.2rem;">My Vault</h2>`;
+        grid.appendChild(vaultHeader);
+
+        renderGrid(vaultSets, true);
+        const divider = document.createElement('div');
+        divider.style.cssText = "grid-column: 1/-1; border-top: 2px solid #ddd; margin-top: 40px;";
+        grid.appendChild(divider);
+
+        createSearchBar(grid, "Full Archive");
+        const archiveSetsContainer = document.createElement('div');
+        archiveSetsContainer.id = "archive-sets-container";
+        archiveSetsContainer.style.cssText = "display: contents;"; 
+        grid.appendChild(archiveSetsContainer);
+        getLegoSets('Star Wars', false);
+    } catch (err) { console.error(err); }
+}
+
+function initLoggedOut() {
+    grid.innerHTML = "";
+    createSearchBar(grid, "Archive Browser");
+    const container = document.createElement('div');
+    container.id = "archive-sets-container";
+    container.style.cssText = "display: contents;";
+    grid.appendChild(container);
+    getLegoSets('Star Wars', false);
+}
+
+window.addEventListener('DOMContentLoaded', () => initLoggedOut());
+
+document.getElementById('vault-link').onclick = async (e) => {
+    e.preventDefault(); if (auth.currentUser) { await loadVault(); scrollWithOffset('my-vault-anchor'); }
+};
+
+const archiveLink = document.querySelector('a[href="#gallery"]');
+if (archiveLink) { archiveLink.onclick = (e) => { e.preventDefault(); scrollWithOffset('archive-anchor'); }; }
