@@ -75,3 +75,52 @@ function createSearchBar(container, titleText = "Archive Browser") {
     sInp.onkeypress = (e) => { if (e.key === 'Enter') performSearch(); };
     document.addEventListener('click', (e) => { if (!searchSection.contains(e.target)) suggestionsBox.style.display = 'none'; });
 }
+
+function renderGrid(sets, isVaultView, container = grid) {
+    if (isVaultView && sets.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style.cssText = "text-align:center; padding:40px 20px; color:#555; grid-column: 1 / -1;";
+        emptyMsg.innerHTML = `<h3 style="color: var(--lego-red);">Your Vault is Empty</h3>`;
+        container.appendChild(emptyMsg);
+        return;
+    }
+    sets.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        const imgUrl = isVaultView ? (s.img || s.set_img_url) : s.set_img_url;
+        div.innerHTML = `<img src="${imgUrl || 'https://placehold.co/300x200'}" alt="${s.name}"><h3>${s.name}</h3><p>${s.year} • ${s.num_parts || '?'} parts</p>`;
+        div.onclick = () => openModal(s, isVaultView);
+        container.appendChild(div);
+    });
+}
+
+function openModal(set, isVaultView) {
+    currentSet = set;
+    document.getElementById('m-img').src = isVaultView ? (set.img || set.set_img_url) : set.set_img_url;
+    document.getElementById('m-title').innerText = set.name;
+    document.getElementById('m-meta').innerText = `Year: ${set.year} | Parts: ${set.num_parts || '?'}`;
+
+    const bobZone = document.getElementById('bob-zone');
+    const guestZone = document.getElementById('guest-zone');
+    const noteField = document.getElementById('build-log');
+    const addBtn = document.getElementById('add-to-vault-btn');
+    const updateBtn = document.getElementById('update-log-btn');
+    const removeBtn = document.getElementById('remove-vault-btn');
+
+    if (auth.currentUser) {
+        bobZone.classList.remove('hidden'); guestZone.classList.add('hidden');
+        if (isVaultView) {
+            noteField.value = set.buildLog || ""; addBtn.classList.add('hidden');
+            updateBtn.classList.remove('hidden'); removeBtn.classList.remove('hidden');
+            updateBtn.onclick = () => updateSet(set.docId); removeBtn.onclick = () => removeSet(set.docId);
+        } else {
+            noteField.value = ""; addBtn.classList.remove('hidden');
+            updateBtn.classList.add('hidden'); removeBtn.classList.add('hidden');
+            addBtn.onclick = saveSet;
+        }
+    } else {
+        bobZone.classList.add('hidden'); guestZone.classList.remove('hidden');
+        document.getElementById('guest-login-trigger').onclick = () => { closeModal(); document.getElementById('login-modal').classList.remove('hidden'); }
+    }
+    detailModal.classList.remove('hidden'); toggleBodyScroll(true);
+}
