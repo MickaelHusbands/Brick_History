@@ -124,3 +124,18 @@ function openModal(set, isVaultView) {
     }
     detailModal.classList.remove('hidden'); toggleBodyScroll(true);
 }
+
+async function saveSet() {
+    if (!auth.currentUser) return;
+    await addDoc(collection(db, "vault"), { uid: auth.currentUser.uid, name: currentSet.name, img: currentSet.set_img_url, year: currentSet.year, num_parts: currentSet.num_parts || 0, buildLog: document.getElementById('build-log').value.trim() });
+    closeModal(); await loadVault(); scrollWithOffset('my-vault-anchor'); 
+}
+
+async function updateSet(docId) {
+    await updateDoc(doc(db, "vault", docId), { buildLog: document.getElementById('build-log').value.trim() });
+    closeModal(); loadVault();
+}
+
+async function removeSet(id) {
+    if (confirm("Remove this set?")) { await deleteDoc(doc(db, "vault", id)); closeModal(); loadVault(); }
+}
